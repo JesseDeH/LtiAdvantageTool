@@ -25,7 +25,7 @@ namespace AdvantageTool.Utility
         {
             public RsaKeyPair()
             {
-                KeyId = CryptoRandom.CreateRandomKeyString(8);
+                KeyId = CryptoRandom.CreateUniqueId(8);
             }
 
             /// <summary>

@@ -8,6 +8,7 @@ using AdvantageTool.Data;
 using AdvantageTool.Utility;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace AdvantageTool
 {
@@ -37,7 +38,7 @@ namespace AdvantageTool
 
             services.AddDbContext<StateDbContext>(options =>
                 options.UseInMemoryDatabase("States"));
-
+            
             services.AddDefaultIdentity<AdvantageToolUser>(options =>
                 {
                     options.Password.RequireDigit = false;
@@ -56,9 +57,7 @@ namespace AdvantageTool
             // within an iframe on the platform
             services.AddAntiforgery(options => options.SuppressXFrameOptionsHeader = true);
 
-            services.AddMvc()
-                .AddRazorPagesOptions(options => options.Conventions.AuthorizeFolder("/Platforms"))
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddRazorPages(options => options.Conventions.AuthorizeFolder("/Platforms"));
 
             services.AddHttpClient();
 
@@ -67,7 +66,7 @@ namespace AdvantageTool
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -85,7 +84,11 @@ namespace AdvantageTool
             app.UseStaticFiles();
             app.UseCookiePolicy();
             app.UseAuthentication();
-            app.UseMvc();
+            app.UseRouting();
+            app.UseEndpoints(e =>
+            {
+                e.MapRazorPages();
+            });
         }
     }
 }

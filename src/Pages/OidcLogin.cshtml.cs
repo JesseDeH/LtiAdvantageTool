@@ -145,7 +145,7 @@ namespace AdvantageTool.Pages
                 prompt: "none",
 
                 // The messagedId (i.e. resource link id or deep link id)
-                extra: new { lti_message_hint = LtiMessageHint }
+                extra: Parameters.FromObject(new { lti_message_hint = LtiMessageHint })
             );
 
             _logger.LogInformation("Requesting id_token.");

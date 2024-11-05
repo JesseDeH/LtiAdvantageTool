@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using AdvantageTool.Data;
 using AdvantageTool.Utility;
@@ -17,7 +18,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json;
 
 namespace AdvantageTool.Pages
 {
@@ -160,7 +160,7 @@ namespace AdvantageTool.Pages
             {
                 var httpClient = _httpClientFactory.CreateClient();
                 var keySetJson = await httpClient.GetStringAsync(platform.JwkSetUrl);
-                var keySet = JsonConvert.DeserializeObject<JsonWebKeySet>(keySetJson);
+                var keySet = JsonSerializer.Deserialize<JsonWebKeySet>(keySetJson);
                 var key = keySet.Keys.SingleOrDefault(k => k.Kid == jwt.Header.Kid);
                 if (key == null)
                 {
@@ -262,7 +262,7 @@ namespace AdvantageTool.Pages
 
                 using (var response = await httpClient.PostAsync(
                         LtiRequest.AssignmentGradeServices.LineItemsUrl,
-                        new StringContent(JsonConvert.SerializeObject(lineItem), Encoding.UTF8, Constants.MediaTypes.LineItem)))
+                        new StringContent(JsonSerializer.Serialize(lineItem), Encoding.UTF8, Constants.MediaTypes.LineItem)))
                 {
                     if (!response.IsSuccessStatusCode)
                     {
@@ -327,7 +327,7 @@ namespace AdvantageTool.Pages
                 var score = new Score
                 {
                     ActivityProgress = ActivityProgress.Completed,
-                    GradingProgress = GradingProgess.FullyGraded,
+                    GradingProgress = GradingProgress.FullyGraded,
                     ScoreGiven = new Random().NextDouble() * 100,
                     ScoreMaximum = 100,
                     TimeStamp = DateTime.UtcNow,
@@ -340,7 +340,7 @@ namespace AdvantageTool.Pages
 
                 using (var response = await httpClient.PostAsync(
                         lineItemUrl.EnsureTrailingSlash() + "scores",
-                        new StringContent(JsonConvert.SerializeObject(score), Encoding.UTF8, Constants.MediaTypes.Score)))
+                        new StringContent(JsonSerializer.Serialize(score), Encoding.UTF8, Constants.MediaTypes.Score)))
                 {
                     if (!response.IsSuccessStatusCode)
                     {
@@ -365,7 +365,7 @@ namespace AdvantageTool.Pages
         private RedirectResult Relaunch(string iss, string userId, string resourceLinkId, string contextId)
         {
             // Send request to tool's endpoint to initiate login
-            var values = new
+            var values = Parameters.FromObject(new
             {
                 // The issuer identifier for the platform
                 iss,
@@ -377,13 +377,13 @@ namespace AdvantageTool.Pages
                 target_link_uri = Url.Page("./Tool", null, null, Request.Scheme),
 
                 // The identifier of the LtiResourceLink message (or the deep link message, etc)
-                lti_message_hint = JsonConvert.SerializeObject(new
+                lti_message_hint = JsonSerializer.Serialize(new
                 {
                     id = resourceLinkId, 
                     messageType = Constants.Lti.LtiResourceLinkRequestMessageType, 
                     courseId = contextId
                 })
-            };
+            });
 
             var url = new RequestUrl(Url.Page("./OidcLogin")).Create(values);
             return Redirect(url);
@@ -400,7 +400,7 @@ namespace AdvantageTool.Pages
             var response = HttpContext.Response;
             response.Clear();
 
-            var dictionary = ValuesHelper.ObjectToDictionary(values);
+            var dictionary = Parameters.FromObject(values);
 
             var s = new StringBuilder();
             s.Append("<html><head><title></title></head>");

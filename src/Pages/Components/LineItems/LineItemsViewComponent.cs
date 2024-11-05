@@ -4,14 +4,15 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text.Json;
 using System.Threading.Tasks;
 using AdvantageTool.Utility;
+using IdentityModel.Client;
 using LtiAdvantage;
 using LtiAdvantage.AssignmentGradeServices;
 using LtiAdvantage.Lti;
 using LtiAdvantage.NamesRoleProvisioningService;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 
 namespace AdvantageTool.Pages.Components.LineItems
 {
@@ -52,8 +53,8 @@ namespace AdvantageTool.Pages.Components.LineItems
                 model.LtiRequest.Iss, 
                 string.Join(" ", 
                     Constants.LtiScopes.Ags.LineItem, 
-                    Constants.LtiScopes.Ags.ResultReadonly,
-                    Constants.LtiScopes.Nrps.MembershipReadonly));
+                    Constants.LtiScopes.Ags.ResultReadonly));
+            //Constants.LtiScopes.Nrps.MembershipReadonly
 
             // The IMS reference implementation returns "Created" with success. 
             if (tokenResponse.IsError && tokenResponse.Error != "Created")
@@ -80,7 +81,7 @@ namespace AdvantageTool.Pages.Components.LineItems
                     }
 
                     var content = await response.Content.ReadAsStringAsync();
-                    model.LineItems = JsonConvert.DeserializeObject<List<LineItem>>(content)
+                    model.LineItems = JsonSerializer.Deserialize<List<LineItem>>(content)
                         .Select(i => new MyLineItem
                         {
                             AgsLineItem = i,
@@ -95,8 +96,12 @@ namespace AdvantageTool.Pages.Components.LineItems
                 return View();
             }
 
-            // Get all the members of the course
+            //JH hardcode users
             model.Members = new Dictionary<string, string>();
+            model.Members.Add("UserId", "GivenNameTool, FamilyNameTool");
+            
+            // Get all the members of the course
+            /*model.Members = new Dictionary<string, string>();
 
             try
             {
@@ -130,7 +135,7 @@ namespace AdvantageTool.Pages.Components.LineItems
             {
                 model.Status = e.Message;
                 return View(model);
-            }
+            }*/
 
             // Get all the results
             try
@@ -153,7 +158,7 @@ namespace AdvantageTool.Pages.Components.LineItems
                         }
 
                         var content = await response.Content.ReadAsStringAsync();
-                        lineItem.Results = JsonConvert.DeserializeObject<ResultContainer>(content);
+                        lineItem.Results = JsonSerializer.Deserialize<ResultContainer>(content);
                     }
                 }
             }

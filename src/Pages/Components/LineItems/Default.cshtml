@@ -49,7 +49,7 @@
                                                     else
                                                     {
                                                         <span data-toggle="tooltip" data-html="true" title="@result.Comment">
-                                                            @result.ResultScore.ToString("N1")
+                                                            @result.ResultScore.ToString()
                                                         </span>
                                                     }
                                                     @if (userId == Model.LtiRequest.Sub && lineItem.AgsLineItem.ResourceLinkId == Model.LtiRequest.ResourceLink.Id)
