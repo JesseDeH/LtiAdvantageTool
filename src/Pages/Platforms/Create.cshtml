@@ -72,16 +72,24 @@
                             <input asp-for="Platform.DeepLinkingLaunchUrl" class="form-control" readonly="readonly"/>
                         </div>
                         <div class="form-group">
+                            <label asp-for="Platform.ToolJwksUrl"></label>
+                            <tooltip asp-for="Platform.ToolJwksUrl"></tooltip>
+                            <input asp-for="Platform.ToolJwksUrl" class="form-control" readonly="readonly"/>
+                        </div>
+                        <div class="form-group">
                             <label asp-for="Platform.ClientId"></label>
                             <input asp-for="Platform.ClientId" class="form-control"/>
                             <span asp-validation-for="Platform.ClientId" class="text-danger"></span>
                         </div>
                         <div class="form-group">
+                            <label asp-for="Platform.PublicKey"></label>
+                            <tooltip asp-for="Platform.PublicKey"></tooltip>
+                            <textarea asp-for="Platform.PublicKey" class="form-control text-monospace small" rows="5" placeholder="Enter the public key in PEM format." readonly="readonly"></textarea>
+                        </div>
+                        <div class="form-group">
                             <label asp-for="Platform.PrivateKey"></label>
                             <tooltip asp-for="Platform.PrivateKey"></tooltip>
-                            (for development keys see <a href="https://lti-ri.imsglobal.org/keygen/index" target="_blank">https://lti-ri.imsglobal.org/keygen/index</a>)
-                            <textarea asp-for="Platform.PrivateKey" class="form-control text-monospace small" rows="5" placeholder="Enter the private key in PEM format."></textarea>
-                            <span asp-validation-for="Platform.PrivateKey" class="text-danger"></span>
+                            <textarea asp-for="Platform.PrivateKey" class="form-control text-monospace small" rows="5" placeholder="Enter the private key in PEM format." readonly="readonly"></textarea>
                         </div>
                     </div>
                 </div>

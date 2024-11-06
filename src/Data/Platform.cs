@@ -1,4 +1,6 @@
-﻿namespace AdvantageTool.Data
+﻿using Microsoft.IdentityModel.Tokens;
+
+namespace AdvantageTool.Data
 {
     public class Platform
     {
@@ -60,6 +62,11 @@
         /// Tool's private key in PEM format
         /// </summary>
         public string PrivateKey { get; set; }
+        
+        /// <summary>
+        /// Tool's public key in JsonWebKey format
+        /// </summary>
+        public string PublicKey { get; set; }
 
         #endregion
 

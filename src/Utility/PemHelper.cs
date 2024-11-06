@@ -110,18 +110,16 @@ namespace AdvantageTool.Utility
         /// </summary>
         /// <param name="publicKey">The public key.</param>
         /// <returns>The public key as an <see cref="RsaSecurityKey"/>.</returns>
-        public static RsaSecurityKey PublicKeyFromPemString(string publicKey)
+        public static JsonWebKey PublicKeyFromPemString(string publicKey)
         {
-            using (var keyTextReader = new StringReader(publicKey))
-            {
-                var keyParameters = (RsaKeyParameters)new PemReader(keyTextReader).ReadObject();
-                var parameters = new RSAParameters
-                {
-                    Modulus = keyParameters.Modulus.ToByteArrayUnsigned(),
-                    Exponent = keyParameters.Exponent.ToByteArrayUnsigned()
-                };
-                return new RsaSecurityKey(parameters);
-            }
+            var publicRsa = RSA.Create();
+            publicRsa.ImportFromPem(publicKey);
+            
+            var securityKey = new RsaSecurityKey(publicRsa);
+            var jwk = JsonWebKeyConverter.ConvertFromRSASecurityKey(securityKey);
+            jwk.Use = "sig";
+            jwk.Alg = "RS256";
+            return jwk;
         }
     }
 }

@@ -98,7 +98,7 @@ namespace AdvantageTool.Pages.Components.LineItems
 
             //JH hardcode users
             model.Members = new Dictionary<string, string>();
-            model.Members.Add("UserId", "GivenNameTool, FamilyNameTool");
+            model.Members.Add("UserId", "Example Student");
             
             // Get all the members of the course
             /*model.Members = new Dictionary<string, string>();

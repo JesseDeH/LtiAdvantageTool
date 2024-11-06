@@ -22,6 +22,9 @@ namespace AdvantageTool.Pages.Platforms
             if (platform == null)
             {
                 PlatformId = CryptoRandom.CreateUniqueId(8);
+                var keys = PemHelper.GenerateRsaKeyPair();
+                PrivateKey = keys.PrivateKey;
+                PublicKey = keys.PublicKey;
             }
             else
             {
@@ -35,11 +38,13 @@ namespace AdvantageTool.Pages.Platforms
 
                 ClientId = platform.ClientId;
                 PrivateKey = platform.PrivateKey;
+                PublicKey = platform.PublicKey;
             }
 
             DeepLinkingLaunchUrl = url.Page("/Tool", null, new { platformId = PlatformId }, request.Scheme);
             LaunchUrl = url.Page("/Tool", null, new { platformId = PlatformId }, request.Scheme);
             LoginUrl = url.Page("/OidcLogin", null, null, request.Scheme);
+            ToolJwksUrl = url.Action(action: "Get", controller: "Jwks", new { platformId = PlatformId }, request.Scheme);
         }
 
         /// <summary>
@@ -113,11 +118,20 @@ namespace AdvantageTool.Pages.Platforms
         public string LoginUrl { get; set; }
 
         /// <summary>
+        /// The Json Web Key Set Url of the Tool
+        /// </summary>
+        public string ToolJwksUrl { get; set; }
+            
+        /// <summary>
         /// Tool's private key in PEM format
         /// </summary>
         [Required]
         [Display(Name = "Private Key", Description = "This is the private key the tool will use to sign client credentials.")]
         public string PrivateKey { get; set; }
+        
+        [Required]
+        [Display(Name = "Public Key", Description = "This is the public key matching the private key.")]
+        public string PublicKey { get; set; }
 
         #endregion
 
@@ -174,6 +188,7 @@ namespace AdvantageTool.Pages.Platforms
 
             platform.ClientId = ClientId;
             platform.PrivateKey = PrivateKey;
+            platform.PublicKey = PublicKey;
         }
     }
 }

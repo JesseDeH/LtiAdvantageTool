@@ -69,14 +69,16 @@ namespace AdvantageTool.Utility
             var jwt = handler.WriteToken(new JwtSecurityToken(new JwtHeader(credentials), payload));
 
             var httpClient = _httpClientFactory.CreateClient();
-            return await httpClient.RequestClientCredentialsTokenWithJwtAsync(
-                    new JwtClientCredentialsTokenRequest
-                    {
-                        Address = platform.AccessTokenUrl,
-                        ClientId = platform.ClientId,
-                        Jwt = jwt,
-                        Scope = scope
-                    });
+            var request = new JwtClientCredentialsTokenRequest
+            {
+                Address = platform.AccessTokenUrl,
+                ClientId = platform.ClientId,
+                Jwt = jwt,
+                Scope = scope,
+                ClientCredentialStyle = ClientCredentialStyle.PostBody
+            };
+            
+            return await httpClient.RequestClientCredentialsTokenWithJwtAsync(request);
         }
     }
 }

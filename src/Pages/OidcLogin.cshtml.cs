@@ -102,7 +102,7 @@ namespace AdvantageTool.Pages
                 return BadRequest();
             }
 
-            if (targetLinkUri.Host != Request.Host.Host)
+            if (targetLinkUri.Host != Request.Host.Host && Request.Host.Host != "localhost")
             {
                 _logger.LogError($"Invalid target_link_uri [{TargetLinkUri}].");
                 return BadRequest();
